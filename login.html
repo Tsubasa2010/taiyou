@@ -1,0 +1,69 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang = "ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<meta charset = "utf-8">
+<link rel="stylesheet" type="text/css" href="login.css">
+<title>ログイン</title>
+<body>
+<form method="post" action="login.php" name="login_form">
+  <div class="login_form_top">
+    <h1>ログイン</h1>
+    <p>ユーザー名とパスワードを入力してください</p>
+    <p>登録がまだの場合<a href= "new_user.php" >新規登録</a>を行ってください</p>
+  </div>
+  <div class="login_form_btm">
+    <input type="id" name="user_id" placeholder="ユーザー名"><br>
+    <input type="password" name="password"placeholder="パスワード">
+  	<input type="submit" name "botton" value = "ログイン">
+  </div>
+</form>
+<?php
+error_reporting(0);
+$conn = pg_connect("host=localhost dbname=connect user=postgres password=St324437");
+$name = $_POST['user_id'];
+$pass = $_POST['password'];
+if ($pass) {
+  	$contents = pg_escape_string(htmlspecialchars($pass));
+  	$login_name=pg_query($conn, "select id from login where name = '$name' ");
+  	$login_pass=pg_query($conn, "select id from login where pass = '$pass' ");
+  	}
+$rows_name = pg_fetch_array($login_name, NULL, PGSQL_ASSOC);
+$rows_pass = pg_fetch_array($login_pass, NULL, PGSQL_ASSOC);
+print('id='.$rows_name['id'].'<br>');
+print('id='.$rows_pass['id'].'<br>');
+echo"$rows_name[id]=";
+echo"$rows_pass[id]<br>";
+if(($rows_name != null) && ($rows_pass != null))
+{
+	if($rows_name == $rows_pass)
+	{
+		http_response_code(301);
+		header("Location: ./login_succes.php") ;
+		exit ;
+		echo"success!!!!<br>";
+	
+	}
+	else
+	{
+		http_response_code(301);
+		header("Location: ./login_retry.php") ;
+		exit ;
+	}
+}
+else
+{
+	http_response_code(301);
+	header("Location: ./login_retry.php") ;
+	exit ;
+}
+
+if($conn)
+{
+	echo"connected<br>";
+}
+pg_close($conn);
+echo"logouted<br>";
+?>
+</body>
+</html>
